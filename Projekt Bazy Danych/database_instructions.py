@@ -22,12 +22,11 @@ def create(db):
     conn.close()
 
 
-def add(db):
+def add(db, instruction):
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
-    instrukcja = input('Podaj instrukcję jaką mam wykonać?')
-    c.execute(instrukcja) #wykonuje jedną instrukcję
+    c.execute(instruction) #wykonuje jedną instrukcję
     rows = c.fetchall()
 
     conn.close()
