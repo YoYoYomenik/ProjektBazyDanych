@@ -2,6 +2,8 @@ import database_instructions as db
 import tkinter as tk
 from tkinter import ttk
 
+from database_instructions import add_columns
+
 database = 'database.db'
 root = tk.Tk()
 root.geometry('1200x800')
@@ -127,8 +129,36 @@ def klik(lbl):
         tree.insert('', 'end', values=row)
     tree.pack()
 
+def konwersja(text):
+    nowy_text=''
+    nowy_text=text.get('1.0',tk.END).strip()
+
+    return nowy_text
+
 def sql_command(text):
-    zwrot=db.add(database, text)
+    zwrot = db.add(database, text)
+    columns = add_columns(database, text)
+
+    widok = tk.PanedWindow(root, orient='vertical')
+    widok.pack()
+    tree = ttk.Treeview(widok)
+
+    tree['columns'] = columns
+    tree['show'] = 'headings'
+
+    scroll = ttk.Scrollbar(tree, orient=tk.VERTICAL)
+    tree.configure(yscrollcommand=scroll.set)
+
+    exitt = tk.Button(widok, text='❌', fg='red', height=1, width=2, command=widok.destroy)
+    exitt.pack(side='top', anchor='ne', padx=2, pady=2)
+
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, width=120)
+
+    for row in zwrot:
+        tree.insert('', 'end', values=row)
+    tree.pack()
 
 
 #podział ekranu
@@ -156,9 +186,11 @@ prod_btn.place(x=20, y=305)
 dost_btn = ttk.Button(root, text="Dostawcy", command=lambda: klik("Dostawcy"))
 dost_btn.place(x=20, y=335)
 
+app_btn = ttk.Button(left, text="Wprowadź\nkomende", command=lambda: sql_command(konwersja(sql_text)))
+app_btn.pack(side='bottom', padx=20, pady=30)
+
 '''
-1. Dodać przycisk apply command
-2. ogarnąc wyświetlanie po wpisaniu komendy
+1. Raportowanie błędów?
 '''
 
 

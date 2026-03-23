@@ -28,9 +28,19 @@ def add(db, instruction):
 
     c.execute(instruction) #wykonuje jedną instrukcję
     rows = c.fetchall()
+    columns = [col[0] for col in c.description]
 
     conn.close()
     return list(rows)
+
+def add_columns(db, instruction):
+    conn = sqlite3.connect(db)
+    c = conn.cursor()
+    c.execute(instruction)  # wykonuje jedną instrukcję
+    rows = c.fetchall()
+    columns = [col[0] for col in c.description]
+    conn.close()
+    return columns
 
 def printing(db, lb):
     conn = sqlite3.connect(db)
