@@ -1,19 +1,26 @@
-import sqlite3
 import mysql.connector
+
+def connect_db(db):
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="TWOJE_HASLO",
+        #database=db
+    )
 
 # potrzebne raz, przy tworzeniu bazy danych
 def create(db):
-    conn = sqlite3.connect(db)
+    conn = connect_db(db)
     c = conn.cursor()
 
     tworzenie = open('tworzenie.txt', 'r', encoding='utf-16-le')
     dodawanie = open('wypelnianie.txt', 'r', encoding='utf-8')
     caly_tekst = tworzenie.read()
 
-    # c.executescript(caly_tekst)
+    c.execute(caly_tekst)
     caly_tekst = dodawanie.read()
 
-    c.executescript(caly_tekst)
+    c.execute(caly_tekst)
     conn.commit()
 
     tworzenie.close()
@@ -23,7 +30,7 @@ def create(db):
 
 
 def add(db, instruction):
-    conn = sqlite3.connect(db)
+    conn = connect_db(db)
     c = conn.cursor()
 
     c.execute(instruction) #wykonuje jedną instrukcję
@@ -34,7 +41,7 @@ def add(db, instruction):
     return list(rows)
 
 def add_columns(db, instruction):
-    conn = sqlite3.connect(db)
+    conn = connect_db(db)
     c = conn.cursor()
     c.execute(instruction)  # wykonuje jedną instrukcję
     rows = c.fetchall()
@@ -43,7 +50,7 @@ def add_columns(db, instruction):
     return columns
 
 def printing(db, lb):
-    conn = sqlite3.connect(db)
+    conn = connect_db(db)
     c = conn.cursor()
 
     c.execute(f"SELECT * FROM {lb}")
