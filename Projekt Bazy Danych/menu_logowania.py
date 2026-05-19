@@ -8,8 +8,7 @@ from database_instructions import connect_db
 def logowanie(log, pas, bd):
     conn = connect_db(log, pas, bd)
     if conn:
-        #tutaj reszta aplikacji, caly main
-        pass
+        m.uruchom_aplikacje()
     else:
         messagebox.showerror("Error", "Błąd! Niepoprawny login lub hasło!")
 
@@ -42,3 +41,5 @@ def main_window():
 
 
     root.mainloop()
+
+main_window()
