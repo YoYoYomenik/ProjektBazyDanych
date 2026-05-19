@@ -1,15 +1,12 @@
 import database_instructions as db
-import menu_logowania
 import tkinter as tk
 from tkinter import ttk
-
 from database_instructions import add_columns
 
-database = 'database.db'
+database = 'projekt'
 root = tk.Tk()
 root.geometry('1200x800')
 root.title('Aplikacja-baza danych')
-
 
 def klik(lbl):
     widok = tk.PanedWindow(root, orient='vertical')
@@ -162,9 +159,8 @@ def sql_command(text):
     tree.pack()
 
 
+
 #podział ekranu
-top = tk.Frame(root, bg='grey', height=30)
-top.pack(fill='x')
 left = tk.Frame(root, bg='lightgrey', width=115)
 left.pack(side='left', fill='y')
 down = tk.Frame(root, bg='white', height=250)
@@ -189,10 +185,6 @@ dost_btn.place(x=20, y=335)
 
 app_btn = ttk.Button(left, text="Wprowadź\nkomende", command=lambda: sql_command(konwersja(sql_text)))
 app_btn.pack(side='bottom', padx=20, pady=30)
-
-'''
-1. Raportowanie błędów?
-'''
 
 
 root.mainloop()

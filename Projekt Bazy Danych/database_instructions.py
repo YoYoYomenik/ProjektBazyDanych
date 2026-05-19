@@ -1,16 +1,21 @@
 import mysql.connector
 
-def connect_db(us, pas):
-    return mysql.connector.connect(
-        host="localhost",
-        user=us,
-        password=pas,
-        #database=db
-    )
+def connect_db(us, pas, bd):
+    try:
+        conn = mysql.connector.connect(
+            host="localhost",
+            user=us.strip(),
+            password=pas.strip(),
+            database=bd.strip()
+        )
+        return conn
+    except mysql.connector.Error as err:
+        print(err)
+        return None
 
 # potrzebne raz, przy tworzeniu bazy danych
 def create(db):
-    conn = connect_db()
+    conn = connect_db('projekt')
     c = conn.cursor()
 
     tworzenie = open('tworzenie.txt', 'r', encoding='utf-16-le')
@@ -30,7 +35,7 @@ def create(db):
 
 
 def add(db, instruction):
-    conn = connect_db()
+    conn = connect_db('projekt')
     c = conn.cursor()
 
     c.execute(instruction) #wykonuje jedną instrukcję
@@ -41,7 +46,7 @@ def add(db, instruction):
     return list(rows)
 
 def add_columns(db, instruction):
-    conn = connect_db()
+    conn = connect_db('projekt')
     c = conn.cursor()
     c.execute(instruction)  # wykonuje jedną instrukcję
     rows = c.fetchall()
@@ -50,7 +55,7 @@ def add_columns(db, instruction):
     return columns
 
 def printing(db, lb):
-    conn = connect_db()
+    conn = connect_db('projekt')
     c = conn.cursor()
 
     c.execute(f"SELECT * FROM {lb}")
