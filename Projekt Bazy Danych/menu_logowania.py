@@ -2,20 +2,20 @@ import tkinter as tk
 import database_instructions as db
 import main as m
 from tkinter import ttk, messagebox
-from database_instructions import connect_db
 
+root = tk.Tk()
+root.geometry("500x300")
+root.title("Menu logowania SQL")
 
 def logowanie(log, pas, bd):
-    conn = connect_db(log, pas, bd)
+    conn = db.connect_db(log, pas, bd)
     if conn:
-        m.uruchom_aplikacje()
+        root.destroy()
+        m.uruchom_aplikacje(conn)
     else:
         messagebox.showerror("Error", "Błąd! Niepoprawny login lub hasło!")
 
 def main_window():
-    root = tk.Tk()
-    root.geometry("500x300")
-    root.title("Menu logowania SQL")
     #ikona = tk.PhotoImage(file="ikonka.png")
     #root.iconphoto(False, ikona)
 

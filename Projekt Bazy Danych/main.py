@@ -1,12 +1,9 @@
 import database_instructions as db
 import tkinter as tk
 from tkinter import ttk
-from database_instructions import add_columns
-
 import tkinter as tk
 
-def uruchom_aplikacje():
-    database = 'projekt'
+def uruchom_aplikacje(conn):
     root = tk.Tk()
     root.geometry('1200x800')
     root.title('Aplikacja-baza danych')
@@ -14,7 +11,7 @@ def uruchom_aplikacje():
     def klik(lbl):
         widok = tk.PanedWindow(root, orient='vertical')
         widok.pack()
-        rows = db.printing(database, lbl)
+        rows = db.printing(conn, lbl)
         tree = ttk.Treeview(widok)
 
         # implementacja tabel
@@ -48,7 +45,7 @@ def uruchom_aplikacje():
             tree.heading('kl_email', text='kl_email')
             tree['show'] = 'headings'
 
-        elif lbl == 'elementyzamowienia':
+        elif lbl == 'Elementyzamowienia':
             tree['columns'] = ('zam_numer',
                                'zam_element',
                                'prod_id',
@@ -66,7 +63,7 @@ def uruchom_aplikacje():
             tree.heading('cena_elem', text='cena_elem')
             tree['show'] = 'headings'
 
-        elif lbl == 'zamowienia':
+        elif lbl == 'Zamowienia':
             tree['columns'] = ('zam_numer',
                                'zam_data',
                                'kl_id')
@@ -122,6 +119,7 @@ def uruchom_aplikacje():
 
         scroll = ttk.Scrollbar(tree, orient=tk.VERTICAL)
         tree.configure(yscrollcommand=scroll.set)
+        #scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
         exitt = tk.Button(widok, text='❌', fg='red', height=1, width=2, command=widok.destroy)
         exitt.pack(side='top', anchor='ne', padx=2, pady=2)
@@ -137,28 +135,42 @@ def uruchom_aplikacje():
         return nowy_text
 
     def sql_command(text):
-        zwrot = db.add(database, text)
-        columns = add_columns(database, text)
+        rows, columns = db.execute_sql(conn, text)
+
+        # dla INSERT/UPDATE/DELETE
+        if not columns:
+            messagebox.showinfo(
+                "SQL",
+                "Polecenie wykonano poprawnie."
+            )
+            return
 
         widok = tk.PanedWindow(root, orient='vertical')
         widok.pack()
+
         tree = ttk.Treeview(widok)
 
         tree['columns'] = columns
         tree['show'] = 'headings'
 
-        scroll = ttk.Scrollbar(tree, orient=tk.VERTICAL)
-        tree.configure(yscrollcommand=scroll.set)
+        exitt = tk.Button(
+            widok,
+            text='❌',
+            fg='red',
+            height=1,
+            width=2,
+            command=widok.destroy
+        )
 
-        exitt = tk.Button(widok, text='❌', fg='red', height=1, width=2, command=widok.destroy)
         exitt.pack(side='top', anchor='ne', padx=2, pady=2)
 
         for col in columns:
             tree.heading(col, text=col)
             tree.column(col, width=120)
 
-        for row in zwrot:
+        for row in rows:
             tree.insert('', 'end', values=row)
+
         tree.pack()
 
     # podział ekranu
@@ -172,10 +184,10 @@ def uruchom_aplikacje():
     kl_btn = ttk.Button(root, text="Klienci", command=lambda: klik("Klienci"))
     kl_btn.place(x=20, y=200)
 
-    elem_zam_btn = ttk.Button(root, text="  Elementy\nzamówienia", command=lambda: klik("elementyzamowienia"))
+    elem_zam_btn = ttk.Button(root, text="  Elementy\nzamówienia", command=lambda: klik("Elementyzamowienia"))
     elem_zam_btn.place(x=20, y=230)
 
-    zam_btn = ttk.Button(root, text="Zamówienia", command=lambda: klik("zamowienia"))
+    zam_btn = ttk.Button(root, text="Zamówienia", command=lambda: klik("Zamowienia"))
     zam_btn.place(x=20, y=275)
 
     prod_btn = ttk.Button(root, text="Produkty", command=lambda: klik("Produkty"))

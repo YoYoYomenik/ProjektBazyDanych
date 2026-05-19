@@ -1,5 +1,6 @@
 import mysql.connector
 
+
 def connect_db(us, pas, bd):
     try:
         conn = mysql.connector.connect(
@@ -8,58 +9,51 @@ def connect_db(us, pas, bd):
             password=pas.strip(),
             database=bd.strip()
         )
+
         return conn
+
     except mysql.connector.Error as err:
         print(err)
         return None
 
-# potrzebne raz, przy tworzeniu bazy danych
-def create(db):
-    conn = connect_db('projekt')
+def execute_sql(conn, instruction):
     c = conn.cursor()
 
-    tworzenie = open('tworzenie.txt', 'r', encoding='utf-16-le')
-    dodawanie = open('wypelnianie.txt', 'r', encoding='utf-8')
-    caly_tekst = tworzenie.read()
+    try:
+        c.execute(instruction)
 
-    c.execute(caly_tekst)
-    caly_tekst = dodawanie.read()
+        # SELECT
+        if c.description is not None:
 
-    c.execute(caly_tekst)
-    conn.commit()
+            rows = c.fetchall()
+            columns = [col[0] for col in c.description]
 
-    tworzenie.close()
-    dodawanie.close()
-    c.close()
-    conn.close()
+            return rows, columns
+
+        # INSERT / UPDATE / DELETE
+        else:
+            conn.commit()
+            return [], []
+
+    except mysql.connector.Error as err:
+        print(err)
+        return [], []
+
+    finally:
+        c.close()
 
 
-def add(db, instruction):
-    conn = connect_db('projekt')
+def printing(conn, lb):
     c = conn.cursor()
 
-    c.execute(instruction) #wykonuje jedną instrukcję
-    rows = c.fetchall()
-    columns = [col[0] for col in c.description]
+    try:
+        c.execute(f"SELECT * FROM {lb}")
+        rows = c.fetchall()
+        return rows
 
-    conn.close()
-    return list(rows)
+    except mysql.connector.Error as err:
+        print(err)
+        return []
 
-def add_columns(db, instruction):
-    conn = connect_db('projekt')
-    c = conn.cursor()
-    c.execute(instruction)  # wykonuje jedną instrukcję
-    rows = c.fetchall()
-    columns = [col[0] for col in c.description]
-    conn.close()
-    return columns
-
-def printing(db, lb):
-    conn = connect_db('projekt')
-    c = conn.cursor()
-
-    c.execute(f"SELECT * FROM {lb}")
-    rows = c.fetchall()
-
-    conn.close()
-    return list(rows)
+    finally:
+        c.close()
