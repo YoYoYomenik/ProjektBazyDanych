@@ -1,15 +1,23 @@
 import database_instructions as db
 import tkinter as tk
-from tkinter import ttk
-import tkinter as tk
+from tkinter import ttk, messagebox
 
 def uruchom_aplikacje(conn):
     root = tk.Tk()
     root.geometry('1200x800')
     root.title('Aplikacja-baza danych')
 
+    aktualny_widok = None
+
     def klik(lbl):
-        widok = tk.PanedWindow(root, orient='vertical')
+        nonlocal aktualny_widok
+
+        # usunięcie poprzedniej tabeli
+        if aktualny_widok is not None:
+            aktualny_widok.destroy()
+
+        aktualny_widok = tk.PanedWindow(root, orient='vertical')
+        widok = aktualny_widok
         widok.pack()
         rows = db.printing(conn, lbl)
         tree = ttk.Treeview(widok)
